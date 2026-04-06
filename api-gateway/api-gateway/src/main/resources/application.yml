@@ -1,0 +1,26 @@
+spring:
+  application:
+    name: API-GATEWAY
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: product-service
+              uri: lb://PRODUCT-SERVICE
+              predicates:
+                - Path=/api/products/**
+
+          default-filters:
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter:
+                  replenishRate: 5
+                  burstCapacity: 10
+                key-resolver: "#{@userKeyResolver}"
